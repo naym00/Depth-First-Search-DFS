@@ -226,6 +226,50 @@ void TraverseDFS(int startNode, node **resulthead, node **resultlast)
     }
 }
 
+bool DFS(int startNode, int key)
+{
+    nodeCarrier *nodePtr = findIdentifier(startNode);
+    if(nodePtr != NULL)
+    {
+        node *stackhead = NULL, *stacklast = NULL;
+        insertSingle(startNode, &stackhead, &stacklast);
+        nodePtr->isVisited = true;
+        while(stacklast!=NULL)
+        {
+            if(stacklast->data == key)
+            {
+                setIsVisitedDefaultValue();
+                return true;
+            }
+            node *ptr = findIdentifier(stacklast->data)->head;
+            while(ptr!=NULL)
+            {
+                nodeCarrier *temporary = findIdentifier(ptr->data);
+                if(temporary->isVisited == false)
+                {
+                    insertSingle(ptr->data, &stackhead, &stacklast);
+                    temporary->isVisited = true;
+                    break;
+                }
+                ptr = ptr->next;
+            }
+            if(ptr == NULL)
+            {
+                deleteLast(&stackhead, &stacklast);
+            }
+        }
+        if(stacklast == NULL)
+        {
+            setIsVisitedDefaultValue();
+            return false;
+        }
+    }
+    else
+    {
+        return false;
+    }
+}
+
 int main()
 {
     int i, totalNodes = 16, startNode = 1;
@@ -253,6 +297,24 @@ int main()
     node *resulthead = NULL, *resultlast = NULL;
     TraverseDFS(1, &resulthead, &resultlast);
     printLinkList(&resulthead, &resultlast, true);
+
+    if(DFS(10, 5) == true)
+    {
+        printf("Node 5 exists.\n");
+    }
+    else
+    {
+        printf("Node 5 doesn't exist.\n");
+    }
+
+    if(DFS(10, 20) == true)
+    {
+        printf("Node 20 exists.\n");
+    }
+    else
+    {
+        printf("Node 20 doesn't exist.\n");
+    }
 
     return 0;
 }
